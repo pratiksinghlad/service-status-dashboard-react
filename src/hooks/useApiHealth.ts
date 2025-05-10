@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import type { ApiEndpoint, ApiHealthStatus, ApiServiceHealth } from '@/types';
 import { MOCK_API_RESPONSES } from '@/config/constants';
 
@@ -93,9 +93,11 @@ const fetchApiHealth = async (endpoint: ApiEndpoint): Promise<ApiHealthStatus> =
   }
 };
 
+export const HEALTH_QUERY_KEY_PREFIX = 'apiHealth';
+
 export function useApiHealth(endpoint: ApiEndpoint | null) {
   return useQuery<ApiHealthStatus, Error>({
-    queryKey: ['apiHealth', endpoint?.id],
+    queryKey: [HEALTH_QUERY_KEY_PREFIX, endpoint?.id],
     queryFn: () => {
       if (!endpoint) { // Should not happen if enabled is set correctly
         return Promise.resolve({
@@ -114,25 +116,24 @@ export function useApiHealth(endpoint: ApiEndpoint | null) {
 
 // Hook for fetching health of multiple APIs
 export function useMultipleApiHealth(endpoints: ApiEndpoint[]) {
-    const queries = endpoints.map(endpoint => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useQuery<ApiHealthStatus, Error>({
-            queryKey: ['apiHealth', endpoint.id],
-            queryFn: () => fetchApiHealth(endpoint),
-            enabled: !!endpoint,
-            refetchInterval: 60000, // Refetch every 60 seconds
-        });
+    const queryResults = useQueries({
+        queries: endpoints.map(endpoint => {
+            return {
+                queryKey: [HEALTH_QUERY_KEY_PREFIX, endpoint.id],
+                queryFn: () => fetchApiHealth(endpoint),
+                enabled: !!endpoint,
+                refetchInterval: 60000, // Refetch every 60 seconds
+            };
+        }),
     });
     
-    const healthStatuses = queries.map(q => q.data).filter(Boolean) as ApiHealthStatus[];
-    const isLoading = queries.some(q => q.isLoading);
-    const isRefreshing = queries.some(q => q.isFetching);
+    const healthStatuses = queryResults.map(q => q.data).filter(Boolean) as ApiHealthStatus[];
+    const isLoading = queryResults.some(q => q.isLoading);
+    const isRefreshing = queryResults.some(q => q.isFetching);
     
     const refetchAll = () => {
-        queries.forEach(q => q.refetch());
+        queryResults.forEach(q => q.refetch());
     };
 
     return { healthStatuses, isLoading, isRefreshing, refetchAll };
 }
-
-export const HEALTH_QUERY_KEY_PREFIX = 'apiHealth';
