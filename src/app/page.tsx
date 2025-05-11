@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -30,9 +31,30 @@ export default function HealthCheckDashboardPage() {
 
   const [selectedApiHealth, setSelectedApiHealth] = useState<ApiHealthStatus | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [globalLastCheckedTimestamp, setGlobalLastCheckedTimestamp] = useState<string | null>(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (healthStatuses.length > 0 && !isLoadingHealth) {
+      // Sort by date to find the most recent.
+      // Make sure to handle potential invalid date strings if `lastChecked` could be malformed.
+      const validStatuses = healthStatuses.filter(status => status.lastChecked && !isNaN(new Date(status.lastChecked).getTime()));
+      if (validStatuses.length > 0) {
+        const latestTimestamp = validStatuses.reduce((latest, current) => {
+          const currentDate = new Date(current.lastChecked);
+          const latestDate = new Date(latest.lastChecked);
+          return currentDate > latestDate ? current : latest;
+        }).lastChecked;
+        setGlobalLastCheckedTimestamp(latestTimestamp);
+      } else {
+         setGlobalLastCheckedTimestamp(null);
+      }
+    } else if (healthStatuses.length === 0 && !isLoadingHealth) { 
+      setGlobalLastCheckedTimestamp(null);
+    }
+  }, [healthStatuses, isLoadingHealth]);
 
   const handleViewDetails = (status: ApiHealthStatus) => {
     setSelectedApiHealth(status);
@@ -65,9 +87,17 @@ export default function HealthCheckDashboardPage() {
 
   const isLoadingInitialData = (!envInitialized || isLoadingEndpoints);
 
+  const handleGlobalRefresh = () => {
+    refetchAll();
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <AppHeader onRefreshAll={refetchAll} isRefreshing={isRefreshing} />
+      <AppHeader 
+        onRefreshAll={handleGlobalRefresh} 
+        isRefreshing={isRefreshing}
+        globalLastCheckedTimestamp={globalLastCheckedTimestamp} 
+      />
       
       <main className="flex-grow container mx-auto px-4 py-8 space-y-8">
         <div className="flex justify-between items-center">

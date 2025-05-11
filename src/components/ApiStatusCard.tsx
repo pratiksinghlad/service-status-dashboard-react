@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ApiEndpoint, ApiHealthStatus } from '@/types';
@@ -5,7 +6,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, XCircle, AlertTriangle, Hourglass, Trash2, Info, RefreshCcw } from 'lucide-react';
-// import { formatDistanceToNow } from 'date-fns'; // Removed as Last Check is removed
 import { useQueryClient } from '@tanstack/react-query';
 import { HEALTH_QUERY_KEY_PREFIX } from '@/hooks/useApiHealth';
 
@@ -33,7 +33,6 @@ export function ApiStatusCard({
   };
   
   const status = healthStatus?.overallStatus || 'Pending';
-  // const lastChecked = healthStatus?.lastChecked ? formatDistanceToNow(new Date(healthStatus.lastChecked), { addSuffix: true }) : 'N/A'; // Removed
 
   let StatusIconComponent;
   let statusColorClass;
@@ -67,33 +66,36 @@ export function ApiStatusCard({
 
   return (
     <Card className={cardClass}>
-      <CardHeader className="p-3">
+      <CardHeader className="p-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-base mb-0.5 truncate" title={endpoint.name}>{endpoint.name}</CardTitle>
+          <CardTitle className="text-sm mb-0 truncate" title={endpoint.name}>{endpoint.name}</CardTitle>
           <Badge variant={badgeVariant} className="ml-2 shrink-0 text-xs px-1.5 py-0.5">{status}</Badge>
         </div>
         <CardDescription className="text-xs truncate" title={endpoint.url}>{endpoint.url}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow space-y-1.5 text-xs p-3">
+      <CardContent className="flex-grow space-y-1 text-xs p-2">
         <div className="flex items-center">
           <StatusIconComponent className={`h-4 w-4 mr-1.5 shrink-0 ${statusColorClass}`} />
-          <span>Status: {status}</span>
+          <span>Status: {isLoading ? 'Loading...' : status}</span>
         </div>
-        {healthStatus?.statusCode && (
-          <p>Code: {healthStatus.statusCode}</p>
-        )}
-        {healthStatus?.responseTimeMs !== undefined && (
-          <p>Resp: {healthStatus.responseTimeMs}ms</p>
-        )}
-        {/* <p>Last Check: {isLoading ? 'Loading...' : lastChecked}</p> */} {/* Removed Last Check */}
+        
+        <div className="flex justify-between items-center">
+          {healthStatus?.statusCode !== undefined ? (
+            <p>Code: {healthStatus.statusCode}</p>
+          ) : <div />} {/* Empty div for spacing if no status code */}
+          {healthStatus?.responseTimeMs !== undefined ? (
+            <p>Resp: {(healthStatus.responseTimeMs / 1000).toFixed(1)}s</p>
+          ) : <div />} {/* Empty div for spacing if no response time */}
+        </div>
+
         {healthStatus?.error && (
             <p className="text-red-500 text-xs truncate" title={healthStatus.error}>Error: {healthStatus.error}</p>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between p-3 pt-2">
+      <CardFooter className="flex justify-between p-2 pt-1.5">
         <Button
           variant="outline"
-          size="sm" // Keep sm for actions or make even smaller custom size if needed
+          size="sm" 
           className="h-7 px-2 text-xs"
           onClick={() => healthStatus && onViewDetails(healthStatus)}
           disabled={!healthStatus || isLoading || status === 'Pending'}
