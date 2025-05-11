@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQuery, useQueries, type UseQueryResult } from '@tanstack/react-query';
 import type { ApiEndpoint, ApiHealthStatus, ApiServiceHealth } from '@/types';
 import { MOCK_API_RESPONSES } from '@/config/constants';
 
@@ -116,16 +116,16 @@ export function useApiHealth(endpoint: ApiEndpoint | null) {
 
 // Hook for fetching health of multiple APIs
 export function useMultipleApiHealth(endpoints: ApiEndpoint[]) {
-    const queryResults = useQueries({
-        queries: endpoints.map(endpoint => {
-            return {
-                queryKey: [HEALTH_QUERY_KEY_PREFIX, endpoint.id],
-                queryFn: () => fetchApiHealth(endpoint),
-                enabled: !!endpoint,
-                refetchInterval: 60000, // Refetch every 60 seconds
-            };
-        }),
+    const queries = endpoints.map(endpoint => {
+        return {
+            queryKey: [HEALTH_QUERY_KEY_PREFIX, endpoint.id],
+            queryFn: () => fetchApiHealth(endpoint),
+            enabled: !!endpoint,
+            refetchInterval: 60000, // Refetch every 60 seconds
+        };
     });
+    
+    const queryResults = useQueries({ queries }) as UseQueryResult<ApiHealthStatus, Error>[];
     
     const healthStatuses = queryResults.map(q => q.data).filter(Boolean) as ApiHealthStatus[];
     const isLoading = queryResults.some(q => q.isLoading);
