@@ -2,11 +2,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { AppHeader } from '@/components/AppHeader';
 import { DashboardOverview } from '@/components/DashboardOverview';
 import { ApiEndpointList } from '@/components/ApiEndpointList';
-import { AddApiEndpointModal } from '@/components/AddApiEndpointModal';
-import { ApiDetailModal } from '@/components/ApiDetailModal';
+// import { AddApiEndpointModal } from '@/components/AddApiEndpointModal'; // Lazy loaded
+// import { ApiDetailModal } from '@/components/ApiDetailModal'; // Lazy loaded
 import { useEnvironment } from '@/hooks/useEnvironment';
 import { useApiEndpointsDb } from '@/hooks/useApiEndpointsDb';
 import { useMultipleApiHealth, HEALTH_QUERY_KEY_PREFIX } from '@/hooks/useApiHealth';
@@ -14,6 +15,19 @@ import type { ApiHealthStatus, ApiEndpoint as ApiEndpointType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button'; // For lazy loading placeholder
+import { PlusCircle } from 'lucide-react'; // For lazy loading placeholder
+
+const AddApiEndpointModal = dynamic(() => import('@/components/AddApiEndpointModal').then(mod => mod.AddApiEndpointModal), {
+  ssr: false,
+  loading: () => <Button disabled><PlusCircle className="mr-2 h-4 w-4" /> Loading...</Button>
+});
+
+const ApiDetailModal = dynamic(() => import('@/components/ApiDetailModal').then(mod => mod.ApiDetailModal), {
+  ssr: false,
+  // No specific loading state needed here as its appearance is controlled by `isDetailModalOpen`
+});
+
 
 export default function HealthCheckDashboardPage() {
   const { currentEnvironment, isInitialized: envInitialized, environments } = useEnvironment();
@@ -38,8 +52,6 @@ export default function HealthCheckDashboardPage() {
 
   useEffect(() => {
     if (healthStatuses.length > 0 && !isLoadingHealth) {
-      // Sort by date to find the most recent.
-      // Make sure to handle potential invalid date strings if `lastChecked` could be malformed.
       const validStatuses = healthStatuses.filter(status => status.lastChecked && !isNaN(new Date(status.lastChecked).getTime()));
       if (validStatuses.length > 0) {
         const latestTimestamp = validStatuses.reduce((latest, current) => {
@@ -56,21 +68,20 @@ export default function HealthCheckDashboardPage() {
     }
   }, [healthStatuses, isLoadingHealth]);
 
-  const handleViewDetails = (status: ApiHealthStatus) => {
+  const handleViewDetails = useCallback((status: ApiHealthStatus) => {
     setSelectedApiHealth(status);
     setIsDetailModalOpen(true);
-  };
+  }, []);
   
-  const handleAddEndpoint = async (data: Omit<ApiEndpointType, 'id'>) => {
+  const handleAddEndpoint = useCallback(async (data: Omit<ApiEndpointType, 'id'>) => {
     await addEndpoint(data);
     // Endpoints list will auto-update via useApiEndpointsDb hook & React Query
-  };
+  }, [addEndpoint]);
 
-  const handleDeleteEndpoint = async (id: string) => {
+  const handleDeleteEndpoint = useCallback(async (id: string) => {
     try {
       const endpointToDelete = endpoints.find(ep => ep.id === id) || allEndpoints.find(ep => ep.id === id);
       await deleteEndpoint(id);
-      // Also remove its health status query from cache
       queryClient.removeQueries({ queryKey: [HEALTH_QUERY_KEY_PREFIX, id] });
       toast({
         title: "API Endpoint Deleted",
@@ -83,13 +94,13 @@ export default function HealthCheckDashboardPage() {
         variant: "destructive",
       });
     }
-  };
+  }, [endpoints, allEndpoints, deleteEndpoint, queryClient, toast]);
 
   const isLoadingInitialData = (!envInitialized || isLoadingEndpoints);
 
-  const handleGlobalRefresh = () => {
+  const handleGlobalRefresh = useCallback(() => {
     refetchAll();
-  };
+  }, [refetchAll]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -127,7 +138,7 @@ export default function HealthCheckDashboardPage() {
         />
       </main>
 
-      {selectedApiHealth && (
+      {selectedApiHealth && isDetailModalOpen && ( // Ensure modal is only rendered when intended to be open
         <ApiDetailModal
           isOpen={isDetailModalOpen}
           onOpenChange={setIsDetailModalOpen}
