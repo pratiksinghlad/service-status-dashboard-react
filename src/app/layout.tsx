@@ -37,25 +37,21 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/icons/browserconfig.xml" />
         <meta name="msapplication-TileColor" content="#1A202C" /> 
         <meta name="msapplication-tap-highlight" content="no" />
-        <meta name="theme-color" content="#1A202C" />
+        <meta name="theme-color" content="#1A202C" /> {/* Ensure this matches manifest.json theme_color */}
 
-        {/* It's good practice to provide an apple-touch-icon, 
-            next-pwa might generate some icons but explicitly adding one is robust.
-            You can replace https://placehold.co/180x180.png with your actual icon file in public/icons/
-        */}
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" data-ai-hint="logo health" />
-        {/* Example for specific sizes if needed:
-        <link rel="apple-touch-icon" sizes="152x152" href="https://placehold.co/152x152.png" data-ai-hint="logo health" />
-        <link rel="apple-touch-icon" sizes="180x180" href="https://placehold.co/180x180.png" data-ai-hint="logo health" />
-        <link rel="apple-touch-icon" sizes="167x167" href="https://placehold.co/167x167.png" data-ai-hint="logo health" />
-        */}
+        {/* Link to manifest.json */}
+        <link rel="manifest" href="/manifest.json" />
+
+        {/* Apple touch icon (PWA) */}
+        {/* You should create an actual icon file at public/icons/apple-touch-icon.png */}
+        <link rel="apple-touch-icon" href="https://placehold.co/180x180.png?text=AppleIcon" data-ai-hint="logo health" />
         
-        {/* Standard favicons, next-pwa might also handle these. 
-            Replace with your actual favicons in public/icons/
-        */}
-        <link rel="icon" type="image/png" sizes="32x32" href="https://placehold.co/32x32.png" data-ai-hint="favicon health" />
-        <link rel="icon" type="image/png" sizes="16x16" href="https://placehold.co/16x16.png" data-ai-hint="favicon health" />
-        <link rel="shortcut icon" href="/favicon.ico" data-ai-hint="favicon health" />
+        {/* Standard favicons */}
+        {/* You should create actual icon files e.g. public/icons/favicon-32x32.png */}
+        <link rel="icon" type="image/png" sizes="32x32" href="https://placehold.co/32x32.png?text=Fav32" data-ai-hint="favicon health" />
+        <link rel="icon" type="image/png" sizes="16x16" href="https://placehold.co/16x16.png?text=Fav16" data-ai-hint="favicon health" />
+        {/* You should create an actual favicon.ico at public/favicon.ico */}
+        <link rel="shortcut icon" href="https://placehold.co/48x48.png?text=FavICO" data-ai-hint="favicon health" />
 
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
