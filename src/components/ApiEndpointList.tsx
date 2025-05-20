@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ApiEndpoint, ApiHealthStatus } from '@/types';
@@ -25,7 +26,7 @@ export function ApiEndpointList({
 
   if (healthData.isLoading && endpoints.length === 0) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {[...Array(3)].map((_, i) => (
           <CardSkeleton key={i} />
         ))}
@@ -64,22 +65,35 @@ export function ApiEndpointList({
 
 function CardSkeleton() {
   return (
-    <div className="border bg-card text-card-foreground shadow-sm rounded-lg p-6 space-y-4">
-      <div className="flex justify-between items-start">
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-6 w-1/5" />
+    // Mimic ApiStatusCard padding and overall structure for better CLS
+    <div className="border bg-card text-card-foreground shadow-sm rounded-lg flex flex-col">
+      {/* CardHeader equivalent: p-2 pb-1 */}
+      <div className="p-2 pb-1">
+        <div className="flex justify-between items-start">
+          <Skeleton className="h-4 w-3/4 mb-0.5" /> {/* CardTitle: text-sm */}
+          <Skeleton className="h-4 w-1/4" />    {/* Badge: text-xs */}
+        </div>
+        <Skeleton className="h-3 w-full" />      {/* CardDescription: text-xs */}
       </div>
-      <Skeleton className="h-4 w-full" />
-      <div className="space-y-2">
-        <Skeleton className="h-5 w-1/2" />
-        <Skeleton className="h-5 w-1/3" />
-        <Skeleton className="h-5 w-2/3" />
+      {/* CardContent equivalent: p-2 pt-1 space-y-1 */}
+      <div className="flex-grow space-y-1 text-xs p-2 pt-1">
+        <div className="flex items-center">
+          <Skeleton className="h-3.5 w-3.5 mr-1.5 rounded-full" /> {/* Icon */}
+          <Skeleton className="h-3.5 w-1/2" /> {/* Status text */}
+        </div>
+        <div className="flex justify-start items-center space-x-3">
+          <Skeleton className="h-3.5 w-1/4" /> {/* Code */}
+          <Skeleton className="h-3.5 w-1/4" /> {/* Resp */}
+        </div>
+        {/* Optional Error line skeleton, add if errors are common and take space */}
+        {/* <Skeleton className="h-3.5 w-3/4" /> */}
       </div>
-      <div className="flex justify-between">
-        <Skeleton className="h-9 w-1/3" />
-        <div className="flex space-x-2">
-          <Skeleton className="h-9 w-9 rounded-md" />
-          <Skeleton className="h-9 w-9 rounded-md" />
+      {/* CardFooter equivalent: p-2 pt-1.5 */}
+      <div className="flex justify-between items-center p-2 pt-1.5">
+        <Skeleton className="h-6 w-1/3 rounded-md" /> {/* Details Button */}
+        <div className="flex items-center space-x-1">
+          <Skeleton className="h-6 w-6 rounded-md" /> {/* Refresh Icon Button */}
+          <Skeleton className="h-6 w-6 rounded-md" /> {/* Delete Icon Button */}
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ const withPWA = PWAInit({
   // To test PWA functionality (like installation) locally during development,
   // you can temporarily set `disable: false` or run a production build (`npm run build && npm run start`).
   // Forcing PWA to be enabled for environments like Firebase Studio:
-  disable: false, 
+  disable: process.env.NODE_ENV === 'development' ? false : false, 
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,

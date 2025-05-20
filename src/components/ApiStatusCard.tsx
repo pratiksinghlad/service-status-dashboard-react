@@ -103,15 +103,16 @@ export const ApiStatusCard = React.memo(function ApiStatusCard({
             className="h-6 px-1.5 text-xs"
             onClick={() => healthStatus && onViewDetails(healthStatus)}
             disabled={!healthStatus || isLoading || status === 'Pending'}
+            aria-label={`View details for ${endpoint.name}`}
           >
             <Info className="mr-1 h-2.5 w-2.5" /> Details
           </Button>
         </div>
         <div className="flex items-center space-x-1">
-          <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={isLoading} aria-label="Refresh Status" className="h-6 w-6">
+          <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={isLoading} aria-label={`Refresh status for ${endpoint.name}`} className="h-6 w-6">
              <RefreshCcw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => onDelete(endpoint.id)} disabled={isDeleting} aria-label="Delete Endpoint" className="h-6 w-6">
+          <Button variant="ghost" size="icon" onClick={() => onDelete(endpoint.id)} disabled={isDeleting} aria-label={`Delete endpoint ${endpoint.name}`} className="h-6 w-6">
             <Trash2 className="h-3 w-3 text-destructive" />
              {isDeleting && <span className="sr-only">Deleting...</span>}
           </Button>
@@ -120,6 +121,3 @@ export const ApiStatusCard = React.memo(function ApiStatusCard({
     </Card>
   );
 });
-
-// If you had a default export before, remove it or adjust accordingly.
-// export default ApiStatusCard; // Remove if previously exported as default
