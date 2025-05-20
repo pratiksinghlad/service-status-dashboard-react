@@ -16,11 +16,14 @@ export function AppHeader({ onRefreshAll, isRefreshing, globalLastCheckedTimesta
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex flex-col">
             <h1 className="text-2xl font-bold text-primary">HealthCheck Central</h1>
-            {globalLastCheckedTimestamp && (
-                <span className="text-xs text-muted-foreground mt-1">
-                    Data as of: {formatDistanceToNow(new Date(globalLastCheckedTimestamp), { addSuffix: true })}
-                </span>
-            )}
+            {/* Add a min-height to prevent layout shift when timestamp appears/disappears */}
+            <div className="min-h-[16px] mt-1"> {/* Adjust min-height based on typical text height */}
+              {globalLastCheckedTimestamp && (
+                  <span className="text-xs text-muted-foreground">
+                      Data as of: {formatDistanceToNow(new Date(globalLastCheckedTimestamp), { addSuffix: true })}
+                  </span>
+              )}
+            </div>
         </div>
         <div className="flex items-center space-x-4">
           <EnvironmentSelector />

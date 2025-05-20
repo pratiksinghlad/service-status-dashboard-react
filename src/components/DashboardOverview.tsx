@@ -1,13 +1,31 @@
+
 'use client';
 
 import type { ApiHealthStatus, ApiEndpoint } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, CheckCircle2, XCircle, AlertCircle, Hourglass } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DashboardOverviewProps {
   apiEndpoints: ApiEndpoint[]; // All endpoints in the current environment
   healthStatuses: ApiHealthStatus[];
   isLoading: boolean;
+}
+
+function OverviewCardSkeleton() {
+  const cardClassName = "shadow-lg"; // Removed hover styles for skeleton
+  return (
+    <Card className={cardClassName}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Skeleton className="h-5 w-1/2" /> {/* CardTitle: text-sm font-medium */}
+        <Skeleton className="h-6 w-6 rounded-sm" /> {/* Icon */}
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-7 w-1/4 mb-1" /> {/* text-2xl font-bold */}
+        <Skeleton className="h-3 w-3/4" /> {/* text-xs text-muted-foreground */}
+      </CardContent>
+    </Card>
+  );
 }
 
 export function DashboardOverview({ apiEndpoints, healthStatuses, isLoading }: DashboardOverviewProps) {
@@ -30,18 +48,9 @@ export function DashboardOverview({ apiEndpoints, healthStatuses, isLoading }: D
 
   if (isLoading && totalApis === 0) { // Show skeletons only if truly loading initial data
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className={cardClassName}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="h-6 w-1/2 bg-gray-300 rounded animate-pulse"></div>
-              <div className="h-6 w-6 bg-gray-300 rounded-full animate-pulse"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="h-10 w-1/4 bg-gray-300 rounded animate-pulse"></div>
-              <div className="h-4 w-3/4 bg-gray-300 rounded animate-pulse mt-1"></div>
-            </CardContent>
-          </Card>
+          <OverviewCardSkeleton key={i} />
         ))}
       </div>
     );
@@ -93,3 +102,4 @@ export function DashboardOverview({ apiEndpoints, healthStatuses, isLoading }: D
     </div>
   );
 }
+
