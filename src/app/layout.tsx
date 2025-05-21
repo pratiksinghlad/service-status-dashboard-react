@@ -1,8 +1,9 @@
-
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
 import './globals.css';
 import { Providers } from '@/components/Providers';
+import { languages, fallbackLng } from '@/i18n-config';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -17,16 +18,32 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'HealthCheck Central',
   description: 'API Health Monitoring Dashboard',
-  manifest: '/manifest.json', // Ensure this points to your manifest file
+  manifest: '/manifest.json',
 };
 
-export default function RootLayout({
+async function getLocale() {
+  const headersList = headers();
+  const acceptLanguage = headersList.get('accept-language');
+  
+  if (!acceptLanguage) return fallbackLng;
+  
+  const preferredLocale = acceptLanguage
+    .split(',')
+    .map((lang: string) => lang.split(';')[0].trim())
+    .find((lang: string) => languages.includes(lang));
+  
+  return preferredLocale || fallbackLng;
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en">
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <meta name="application-name" content="HealthCheck Central" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
