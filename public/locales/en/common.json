@@ -1,0 +1,10 @@
+{
+  "appTitle": "HealthCheck Central",
+  "dashboardTitle": "Dashboard",
+  "refreshButtonLabel": "Refresh All API Statuses",
+  "environmentSelectorLabel": "Environment",
+  "lastCheckedLabel": "Data as of:",
+  "switchToLightMode": "Switch to light mode",
+  "switchToDarkMode": "Switch to dark mode",
+  "languageLabel": "Language"
+}

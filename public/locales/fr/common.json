@@ -1,0 +1,10 @@
+{
+  "appTitle": "HealthCheck Central",
+  "dashboardTitle": "Tableau de bord",
+  "refreshButtonLabel": "Rafraîchir tous les états des API",
+  "environmentSelectorLabel": "Environnement",
+  "lastCheckedLabel": "Données du:",
+  "switchToLightMode": "Passer en mode clair",
+  "switchToDarkMode": "Passer en mode sombre",
+  "languageLabel": "Langue"
+}

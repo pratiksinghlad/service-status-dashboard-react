@@ -1,4 +1,3 @@
-
 import type {NextConfig} from 'next';
 import PWAInit from '@ducanh2912/next-pwa';
 
@@ -40,6 +39,10 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       }
     ],
+  },
+  i18n: { // Added i18n configuration
+    defaultLocale: 'en',
+    locales: ['en', 'fr', 'es'],
   },
 };
 
