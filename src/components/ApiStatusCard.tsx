@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, XCircle, AlertTriangle, Hourglass, Trash2, Info, RefreshCcw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { HEALTH_QUERY_KEY_PREFIX } from '@/hooks/useApiHealth';
-import { formatDistanceToNow } from 'date-fns';
 
 
 interface ApiStatusCardProps {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,7 +16,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
@@ -52,7 +51,7 @@ export function AddApiEndpointModal({ currentEnvironment, environments, onAddEnd
   
   // Update default environment when currentEnvironment prop changes and form is not dirty
   // This is useful if the modal is kept mounted and user changes global environment
-  useState(() => {
+  useEffect(() => {
      if (!form.formState.isDirty) {
       form.reset({ environment: currentEnvironment, name: '', url: '' });
     }

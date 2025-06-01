@@ -15,7 +15,7 @@ let dbPromise: Promise<IDBPDatabase<HealthCheckDB>> | null = null;
 function getDb(): Promise<IDBPDatabase<HealthCheckDB>> {
   if (!dbPromise) {
     dbPromise = openDB<HealthCheckDB>(DB_NAME, DB_VERSION, {
-      upgrade(db, oldVersion, newVersion, transaction) {
+      upgrade(db, _oldVersion, _newVersion, _transaction) {
         if (!db.objectStoreNames.contains(API_ENDPOINTS_STORE_NAME)) {
           const store = db.createObjectStore(API_ENDPOINTS_STORE_NAME, {
             keyPath: 'id',

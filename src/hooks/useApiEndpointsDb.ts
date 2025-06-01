@@ -50,7 +50,7 @@ export function useApiEndpointsDb(currentEnvironment: Environment) {
 
   const deleteEndpointMutation = useMutation<void, Error, string>({
     mutationFn: dbDeleteApiEndpoint,
-    onSuccess: (_, deletedId) => {
+    onSuccess: (_, _deletedId) => {
       // To invalidate correctly, we need to know which environment it belonged to
       // Or just invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: [API_ENDPOINTS_QUERY_KEY] });
