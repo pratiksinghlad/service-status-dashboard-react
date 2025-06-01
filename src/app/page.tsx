@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -14,7 +13,7 @@ import { useMultipleApiHealth, HEALTH_QUERY_KEY_PREFIX } from '@/hooks/useApiHea
 import type { ApiHealthStatus, ApiEndpoint as ApiEndpointType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { Skeleton } from '@/components/ui/skeleton';
+// import { Skeleton } from '@/components/ui/skeleton'; // Removed
 import { Button } from '@/components/ui/button'; // For lazy loading placeholder
 import { PlusCircle } from 'lucide-react'; // For lazy loading placeholder
 

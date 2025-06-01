@@ -11,7 +11,7 @@ export interface ApiServiceHealth {
   source: string;
   status: "Healthy" | "Unhealthy" | "Pending";
   description?: string;
-  metrics?: Record<string, any>; // For service-specific metrics
+  metrics?: Record<string, unknown>; // For service-specific metrics
 }
 
 export interface ApiHealthStatus {

@@ -17,7 +17,7 @@ const fetchApiHealth = async (endpoint: ApiEndpoint): Promise<ApiHealthStatus> =
     const data = response.data;
 
     // Assuming data matches the specified /health/ready structure
-    const services: ApiServiceHealth[] = (data.results || []).map((service: any) => ({
+    const services: ApiServiceHealth[] = (data.results || []).map((service: Partial<ApiServiceHealth>) => ({
       source: service.source,
       status: service.status as "Healthy" | "Unhealthy" | "Pending",
       description: service.description,
@@ -32,21 +32,33 @@ const fetchApiHealth = async (endpoint: ApiEndpoint): Promise<ApiHealthStatus> =
       lastChecked: new Date().toISOString(),
       services,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     responseTimeMs = responseTimeMs || (Date.now() - startTime);
     let errorMessage = 'Network error or invalid response';
     
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
+      const axiosError = error as AxiosError; // This is safe due to the isAxiosError check
       if (axiosError.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         statusCode = axiosError.response.status;
         try {
-            const errorData = axiosError.response.data as any;
-            errorMessage = errorData?.message || JSON.stringify(errorData) || `Request failed with status ${statusCode}`;
-        } catch (e) {
-            errorMessage = `Request failed with status ${statusCode}`;
+            // The structure of errorData is unknown, so using 'as any' here was a previous lint issue.
+            // It's better to attempt to parse it or access properties safely.
+            const errorData = axiosError.response.data;
+            if (typeof errorData === 'string') {
+              errorMessage = errorData;
+            } else if (errorData && typeof errorData === 'object' && 'message' in errorData && typeof errorData.message === 'string') {
+              errorMessage = errorData.message;
+            } else {
+              try {
+                errorMessage = JSON.stringify(errorData) || `Request failed with status ${statusCode}`;
+              } catch {
+                 errorMessage = `Request failed with status ${statusCode} (and error data was not stringifiable)`;
+              }
+            }
+        } catch (_e) { // Catch for JSON.stringify or other issues if errorData is complex
+            errorMessage = `Request failed with status ${statusCode} (parsing error data failed)`;
         }
       } else if (axiosError.request) {
         // The request was made but no response was received
@@ -56,13 +68,16 @@ const fetchApiHealth = async (endpoint: ApiEndpoint): Promise<ApiHealthStatus> =
         }
       } else {
         // Something happened in setting up the request that triggered an Error
-        errorMessage = axiosError.message;
+        errorMessage = axiosError.message; // This is safe as AxiosError has a message
       }
-    } else if (error.name === 'AbortError') { // For fetch's AbortSignal, though axios uses its own timeout
-        errorMessage = 'Request timed out';
-    } else if (error instanceof Error) {
+    } else if (error instanceof Error) { // Check if it's a generic Error
         errorMessage = error.message;
+    } else if (typeof error === 'string') { // Handle if the error is just a string
+        errorMessage = error;
     }
+    // Note: The check for error.name === 'AbortError' might be problematic if error is not an Error instance.
+    // However, axios.isAxiosError already covers many timeout scenarios (e.g. ECONNABORTED).
+    // If AbortError is from a non-Error object, it would need a more specific check.
 
 
     return {

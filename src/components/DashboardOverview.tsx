@@ -3,7 +3,7 @@
 
 import type { ApiHealthStatus, ApiEndpoint } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, CheckCircle2, XCircle, AlertCircle, Hourglass } from 'lucide-react';
+import { Users, CheckCircle2, XCircle, Hourglass } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface DashboardOverviewProps {
